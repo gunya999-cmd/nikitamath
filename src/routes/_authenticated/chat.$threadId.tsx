@@ -188,8 +188,7 @@ function ChatWindow({
         <ConversationScrollButton />
       </Conversation>
 
-      <form onSubmit={onSubmit} className="mt-3">
-        <PromptInput>
+      <PromptInput onSubmit={(_msg, e) => onSubmit(e)} className="mt-3">
           <PromptInputTextarea
             ref={textareaRef}
             value={input}
@@ -199,8 +198,7 @@ function ChatWindow({
           <PromptInputFooter className="justify-end">
             <PromptInputSubmit status={status} disabled={isLoading || !input.trim()} />
           </PromptInputFooter>
-        </PromptInput>
-      </form>
+      </PromptInput>
     </div>
   );
 }
