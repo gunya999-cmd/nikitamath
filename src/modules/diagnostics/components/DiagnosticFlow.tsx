@@ -6,8 +6,7 @@ import { Button } from "@/components/ui/button";
 import { startDiagnostic, submitDiagnostic } from "@/modules/diagnostics/server/diagnostics.functions";
 
 type Answer = { questionId: string; answer: string };
-
-type DiagnosticResult = Awaited<ReturnType<ReturnType<typeof useServerFn<typeof submitDiagnostic>>>>;
+type DiagnosticResult = { score: number; correctCount: number; total: number; recommendedPath: { code: string; title: string }[] };
 
 export function DiagnosticFlow() {
   const start = useServerFn(startDiagnostic);
