@@ -77,11 +77,15 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { name: "viewport", content: "width=device-width, initial-scale=1" },
       { title: "Math Tutor — персональный AI-репетитор по математике" },
       { name: "description", content: "AI-репетитор, который учит, а не решает за тебя. Адаптируется под класс и программу." },
-      { property: "og:title", content: "Math Tutor — AI-репетитор по математике" },
-      { property: "og:description", content: "Персональный AI-учитель для школьников." },
+      { property: "og:title", content: "Math Tutor — персональный AI-репетитор по математике" },
+      { property: "og:description", content: "AI-репетитор, который учит, а не решает за тебя. Адаптируется под класс и программу." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
       { name: "twitter:site", content: "@Lovable" },
+      { name: "twitter:title", content: "Math Tutor — персональный AI-репетитор по математике" },
+      { name: "twitter:description", content: "AI-репетитор, который учит, а не решает за тебя. Адаптируется под класс и программу." },
+      { property: "og:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/c289e90e-b993-4991-ae28-bfb9bd91a892/id-preview-9c7ee5e3--b2cfbe1f-1acd-4d2d-8c8d-78725cc37194.lovable.app-1779257275057.png" },
+      { name: "twitter:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/c289e90e-b993-4991-ae28-bfb9bd91a892/id-preview-9c7ee5e3--b2cfbe1f-1acd-4d2d-8c8d-78725cc37194.lovable.app-1779257275057.png" },
     ],
     links: [
       {
