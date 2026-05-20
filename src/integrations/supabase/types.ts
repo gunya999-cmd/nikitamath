@@ -14,7 +14,149 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      messages: {
+        Row: {
+          created_at: string
+          id: string
+          parts: Json
+          role: string
+          thread_id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          parts: Json
+          role: string
+          thread_id: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          parts?: Json
+          role?: string
+          thread_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "messages_thread_id_fkey"
+            columns: ["thread_id"]
+            isOneToOne: false
+            referencedRelation: "threads"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      profiles: {
+        Row: {
+          age: number | null
+          country: string | null
+          created_at: string
+          curriculum_type: string | null
+          id: string
+          last_active_date: string | null
+          level: number
+          name: string | null
+          onboarded: boolean
+          school_grade: string | null
+          streak_days: number
+          updated_at: string
+          xp: number
+        }
+        Insert: {
+          age?: number | null
+          country?: string | null
+          created_at?: string
+          curriculum_type?: string | null
+          id: string
+          last_active_date?: string | null
+          level?: number
+          name?: string | null
+          onboarded?: boolean
+          school_grade?: string | null
+          streak_days?: number
+          updated_at?: string
+          xp?: number
+        }
+        Update: {
+          age?: number | null
+          country?: string | null
+          created_at?: string
+          curriculum_type?: string | null
+          id?: string
+          last_active_date?: string | null
+          level?: number
+          name?: string | null
+          onboarded?: boolean
+          school_grade?: string | null
+          streak_days?: number
+          updated_at?: string
+          xp?: number
+        }
+        Relationships: []
+      }
+      student_memory: {
+        Row: {
+          id: string
+          last_notes: string | null
+          mastery_level: number
+          mistake_count: number
+          topic: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          id?: string
+          last_notes?: string | null
+          mastery_level?: number
+          mistake_count?: number
+          topic: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          id?: string
+          last_notes?: string | null
+          mastery_level?: number
+          mistake_count?: number
+          topic?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      threads: {
+        Row: {
+          created_at: string
+          id: string
+          mode: string
+          title: string
+          topic: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          mode?: string
+          title?: string
+          topic?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          mode?: string
+          title?: string
+          topic?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
