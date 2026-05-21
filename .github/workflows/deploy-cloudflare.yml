@@ -40,4 +40,4 @@ jobs:
         run: npm run build
 
       - name: Deploy
-        run: npx wrangler deploy
+        run: npx wrangler deploy --account-id "$CLOUDFLARE_ACCOUNT_ID"
