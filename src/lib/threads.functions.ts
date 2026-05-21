@@ -1,1 +1,1 @@
-export * from "../modules/tutor/server/threads.functions";
+export * from "../modules/tutor/threads.functions";
