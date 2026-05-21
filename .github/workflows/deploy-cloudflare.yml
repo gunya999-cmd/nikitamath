@@ -8,8 +8,9 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
     env:
-      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
       SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
       SUPABASE_PUBLISHABLE_KEY: ${{ secrets.SUPABASE_PUBLISHABLE_KEY }}
       VITE_SUPABASE_PROJECT_ID: ${{ secrets.VITE_SUPABASE_PROJECT_ID }}
@@ -24,20 +25,17 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 24
+          node-version: 22
+          cache: npm
 
       - name: Install dependencies
-        run: npm install
+        run: npm ci
 
-      - name: Format
-        run: npm run format
-
-      - name: Lint diagnostics
-        continue-on-error: true
+      - name: Lint
         run: npm run lint
 
       - name: Build
         run: npm run build
 
       - name: Deploy
-        run: npx wrangler deploy
+        run: npm run deploy
