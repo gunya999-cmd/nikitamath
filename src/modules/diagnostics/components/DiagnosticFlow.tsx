@@ -3,7 +3,7 @@ import { Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { Button } from "@/components/ui/button";
-import { startDiagnostic, submitDiagnostic } from "@/modules/diagnostics/server/diagnostics.functions";
+import { startDiagnostic, submitDiagnostic } from "@/modules/diagnostics/diagnostics.functions";
 
 type Answer = { questionId: string; answer: string };
 type DiagnosticResult = { score: number; correctCount: number; total: number; recommendedPath: { code: string; title: string }[] };
@@ -16,7 +16,7 @@ export function DiagnosticFlow() {
   const [result, setResult] = useState<DiagnosticResult | null>(null);
   const [submitting, setSubmitting] = useState(false);
 
-  const questions = data?.questions ?? [];
+  const questions = useMemo(() => data?.questions ?? [], [data?.questions]);
   const progress = useMemo(() => questions.filter((q) => answers[q.id]?.trim()).length, [answers, questions]);
 
   async function onSubmit() {
