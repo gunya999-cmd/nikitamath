@@ -101,7 +101,7 @@ function ChatWindow({
           const token = data.session?.access_token;
           const headers = new Headers(init?.headers);
           if (token) headers.set("Authorization", `Bearer ${token}`);
-          // attach extra body fields
+
           let body = init?.body;
           if (typeof body === "string") {
             try {
@@ -110,8 +110,11 @@ function ChatWindow({
               parsed.mode = mode;
               parsed.ctx = ctx;
               body = JSON.stringify(parsed);
-            } catch {}
+            } catch (error) {
+              console.warn("Failed to attach chat metadata", error);
+            }
           }
+
           return fetch(url, { ...init, headers, body });
         },
       }),
@@ -189,15 +192,15 @@ function ChatWindow({
       </Conversation>
 
       <PromptInput onSubmit={(_msg, e) => onSubmit(e)} className="mt-3">
-          <PromptInputTextarea
-            ref={textareaRef}
-            value={input}
-            onChange={(e) => setInput(e.target.value)}
-            placeholder="Напиши задачу или вопрос…"
-          />
-          <PromptInputFooter className="justify-end">
-            <PromptInputSubmit status={status} disabled={isLoading || !input.trim()} />
-          </PromptInputFooter>
+        <PromptInputTextarea
+          ref={textareaRef}
+          value={input}
+          onChange={(e) => setInput(e.target.value)}
+          placeholder="Напиши задачу или вопрос…"
+        />
+        <PromptInputFooter className="justify-end">
+          <PromptInputSubmit status={status} disabled={isLoading || !input.trim()} />
+        </PromptInputFooter>
       </PromptInput>
     </div>
   );
