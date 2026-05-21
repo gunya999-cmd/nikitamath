@@ -95,7 +95,7 @@ export const submitDiagnostic = createServerFn({ method: "POST" })
       const question = questionById.get(item.questionId);
       if (!question) continue;
       const skill = skillsByCode.get(question.skillCode);
-      if (!skill) continue;
+      if (!skill) throw new Error(`Missing skill: ${question.skillCode}`);
       const correct = isAnswerCorrect(item.answer, question.answer);
       const mistakeType = classifyMistakeFromAnswer({
         prompt: question.prompt,
