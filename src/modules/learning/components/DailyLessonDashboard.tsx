@@ -2,7 +2,7 @@ import { Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { Button } from "@/components/ui/button";
-import { getDailyLesson } from "@/modules/learning/server/learning.functions";
+import { getDailyLesson } from "@/modules/learning/learning.functions";
 
 export function DailyLessonDashboard() {
   const fetchDailyLesson = useServerFn(getDailyLesson);
@@ -14,7 +14,6 @@ export function DailyLessonDashboard() {
   const plan = data?.plan ?? [];
   const weakSkills = data?.weakSkills ?? [];
   const focusSkill = data?.focusSkill;
-  const target = data?.hasMastery ? "/chat" : "/diagnostic";
 
   return (
     <main className="mx-auto max-w-5xl px-6 py-10">
@@ -36,7 +35,11 @@ export function DailyLessonDashboard() {
             <h2 className="mt-1 text-2xl font-semibold">{focusSkill?.title ?? "Диагностика уровня"}</h2>
             <p className="mt-1 text-sm text-muted-foreground">Mastery: {Math.round(focusSkill?.masteryScore ?? 0)}%</p>
           </div>
-          <Link to={target}><Button className="rounded-full">{data?.hasMastery ? "Начать урок" : "Пройти диагностику"}</Button></Link>
+          {data?.hasMastery ? (
+            <Link to="/chat"><Button className="rounded-full">Начать урок</Button></Link>
+          ) : (
+            <Link to="/diagnostic"><Button className="rounded-full">Пройти диагностику</Button></Link>
+          )}
         </div>
         <div className="mt-6 grid gap-3">
           {plan.map((item, index) => (
