@@ -1,1 +1,1 @@
-export * from "../modules/auth/server/profile.functions";
+export * from "../modules/auth/profile.functions";
