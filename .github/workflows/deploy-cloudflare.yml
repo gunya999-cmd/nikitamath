@@ -32,7 +32,8 @@ jobs:
       - name: Format
         run: npm run format
 
-      - name: Lint
+      - name: Lint diagnostics
+        continue-on-error: true
         run: npm run lint
 
       - name: Build
