@@ -1,7 +1,7 @@
 import { useEffect, useRef } from "react";
 import { useNavigate } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
-import { createThread } from "@/modules/tutor/server/threads.functions";
+import { createThread } from "@/modules/tutor/threads.functions";
 
 export function NewChatRedirect() {
   const create = useServerFn(createThread);
