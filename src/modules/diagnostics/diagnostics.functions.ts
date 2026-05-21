@@ -8,12 +8,14 @@ import { findSkillByCode } from "@/modules/learning/skill-tags";
 
 type Db = any;
 type SkillRow = { id: string; code: string; title: string };
+type MasteryState = { attemptsCount: number; correctAttempts: number; masteryScore: number };
 
-async function getSkill(db: Db, code: string): Promise<SkillRow> {
-  const { data, error } = await db.from("skills").select("id, code, title").eq("code", code).maybeSingle();
+async function getSkillsByCodes(db: Db, codes: string[]): Promise<Map<string, SkillRow>> {
+  if (codes.length === 0) return new Map();
+  const { data, error } = await db.from("skills").select("id, code, title").in("code", codes);
   if (error) throw new Error(error.message);
-  if (!data) throw new Error(`Missing skill: ${code}`);
-  return data as SkillRow;
+  const skills = (data ?? []) as SkillRow[];
+  return new Map(skills.map((skill) => [skill.code, skill]));
 }
 
 function nextReview(score: number) {
@@ -64,10 +66,36 @@ export const submitDiagnostic = createServerFn({ method: "POST" })
     if (!session) throw new Error("Diagnostic session not found");
 
     const results = [];
+    const questionById = new Map(INITIAL_DIAGNOSTIC_QUESTIONS.map((question) => [question.id, question]));
+    const answeredQuestions = data.answers
+      .map((item) => questionById.get(item.questionId))
+      .filter((question): question is (typeof INITIAL_DIAGNOSTIC_QUESTIONS)[number] => Boolean(question));
+    const uniqueSkillCodes = Array.from(new Set(answeredQuestions.map((q) => q.skillCode)));
+    const skillsByCode = await getSkillsByCodes(db, uniqueSkillCodes);
+    const skillIds = Array.from(skillsByCode.values()).map((skill) => skill.id);
+    const { data: masteryRows } =
+      skillIds.length > 0
+        ? await db
+            .from("student_skill_mastery")
+            .select("skill_id, attempts_count, correct_attempts")
+            .eq("user_id", userId)
+            .in("skill_id", skillIds)
+        : { data: [] };
+    const masteryBySkillId = new Map(
+      (masteryRows ?? []).map((row: { skill_id: string; attempts_count: number | null; correct_attempts: number | null }) => [
+        row.skill_id,
+        {
+          attemptsCount: row.attempts_count ?? 0,
+          correctAttempts: row.correct_attempts ?? 0,
+        },
+      ]),
+    );
+    const masteryUpdatesBySkillId = new Map<string, MasteryState>();
     for (const item of data.answers) {
-      const question = INITIAL_DIAGNOSTIC_QUESTIONS.find((q) => q.id === item.questionId);
+      const question = questionById.get(item.questionId);
       if (!question) continue;
-      const skill = await getSkill(db, question.skillCode);
+      const skill = skillsByCode.get(question.skillCode);
+      if (!skill) continue;
       const correct = isAnswerCorrect(item.answer, question.answer);
       const mistakeType = classifyMistakeFromAnswer({
         prompt: question.prompt,
@@ -90,22 +118,30 @@ export const submitDiagnostic = createServerFn({ method: "POST" })
       });
 
       const masteryScore = correct ? Math.min(100, 55 + question.difficulty * 8) : Math.max(10, 45 - question.difficulty * 5);
+      const skillMastery = masteryBySkillId.get(skill.id) ?? { attemptsCount: 0, correctAttempts: 0 };
+      const attemptsCount = skillMastery.attemptsCount + 1;
+      const correctAttempts = skillMastery.correctAttempts + (correct ? 1 : 0);
+      masteryBySkillId.set(skill.id, { attemptsCount, correctAttempts });
+      masteryUpdatesBySkillId.set(skill.id, { attemptsCount, correctAttempts, masteryScore });
+
+      results.push({ questionId: question.id, skillCode: question.skillCode, skillTitle: skill.title, correct, mistakeType, masteryScore });
+    }
+
+    for (const [skillId, update] of masteryUpdatesBySkillId.entries()) {
       await db.from("student_skill_mastery").upsert(
         {
           user_id: userId,
-          skill_id: skill.id,
-          mastery_score: masteryScore,
+          skill_id: skillId,
+          mastery_score: update.masteryScore,
           confidence_score: 0.35,
-          attempts_count: 1,
-          correct_attempts: correct ? 1 : 0,
+          attempts_count: update.attemptsCount,
+          correct_attempts: update.correctAttempts,
           last_practiced_at: new Date().toISOString(),
-          next_review_at: nextReview(masteryScore),
+          next_review_at: nextReview(update.masteryScore),
           updated_at: new Date().toISOString(),
         },
         { onConflict: "user_id,skill_id" },
       );
-
-      results.push({ questionId: question.id, skillCode: question.skillCode, skillTitle: skill.title, correct, mistakeType, masteryScore });
     }
 
     const correctCount = results.filter((r) => r.correct).length;

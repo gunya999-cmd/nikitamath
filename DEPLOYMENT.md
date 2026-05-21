@@ -32,6 +32,14 @@ Required Supabase secrets:
 
 After the secrets are configured, deployments happen automatically on every push to `main`.
 
+CI uses:
+
+- Node.js 22
+- `npm ci` for deterministic installs from `package-lock.json`
+- `npm run lint`
+- `npm run build`
+- `npm run deploy` (which runs build + `wrangler deploy`)
+
 You can also run it manually:
 
 `GitHub -> Actions -> Deploy to Cloudflare Workers -> Run workflow`
